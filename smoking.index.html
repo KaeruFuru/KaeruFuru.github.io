@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Smoking Does to Your Body</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,600&family=Courier+Prime:wght@400;700&display=swap');
+
+:root {
+  --bg:        #ffffff;
+  --surface:   #f5f6f9;
+  --surface2:  #ebedf3;
+  --border:    #d0d4e0;
+  --red:       #c91e1e;
+  --red-dim:   #f9d0d0;
+  --orange:    #c94d10;
+  --amber:     #9e5f00;
+  --green:     #1a8c50;
+  --blue:      #1558b8;
+  --text:      #181c2a;
+  --text-dim:  #55627a;
+  --heading:   #0d1120;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+  background: radial-gradient(ellipse 80% 55% at 50% 40%, #ffe0e0 0%, #fff 70%);
+}
+
+.hero-eyebrow {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.28em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 1.4rem;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.8rem, 11vw, 8.5rem);
+  line-height: 0.88;
+  color: var(--heading);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.hero-title span { color: var(--red); display: block; }
+
+.hero-sub {
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  max-width: 500px;
+  margin: 1.4rem auto 2.4rem;
+  line-height: 1.7;
+}
+
+.lung-hero { width:160px; height:160px; margin: 0 auto 1.8rem; }
+.lung-hero svg {
+  width:100%; height:100%;
+  filter: drop-shadow(0 0 18px rgba(180,30,30,0.3));
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,100% { transform:scale(1);   filter:drop-shadow(0 0 18px rgba(180,30,30,0.3)); }
+  50%      { transform:scale(1.06); filter:drop-shadow(0 0 32px rgba(180,30,30,0.55)); }
+}
+
+.btn-start {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  padding: 1rem 2.8rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-start:hover { background:var(--orange); transform:translateY(-2px); }
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  letter-spacing: 0.22em;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%,100% { transform:translateX(-50%) translateY(0);  }
+  50%      { transform:translateX(-50%) translateY(6px); }
+}
+
+/* ── TICKER ── */
+#stats-ticker {
+  background: #fff0f0;
+  border-top: 1px solid #f0cece;
+  border-bottom: 1px solid #f0cece;
+  padding: 0.85rem 0;
+  overflow: hidden;
+}
+
+.ticker-inner {
+  display: flex;
+  gap: 4rem;
+  animation: ticker 30s linear infinite;
+  white-space: nowrap;
+}
+@keyframes ticker {
+  from { transform:translateX(0);    }
+  to   { transform:translateX(-50%); }
+}
+
+.ticker-item {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.ticker-item span { color: var(--red); font-weight:700; }
+
+/* ── SIMULATION ── */
+#simulation {
+  padding: 4rem 1rem;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.sim-header { text-align:center; margin-bottom: 3rem; }
+
+.section-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.88rem;
+  letter-spacing: 0.28em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.7rem;
+}
+
+.section-title, .sim-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+  color: var(--heading);
+  letter-spacing: 0.04em;
+}
+
+/* Stage progress dots */
+.stage-progress {
+  display: flex;
+  align-items: center;
+  margin: 2rem 0;
+  padding: 0 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.stage-progress::-webkit-scrollbar { display:none; }
+
+.stage-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  flex: 1;
+  min-width: 85px;
+  position: relative;
+}
+.stage-dot::before {
+  content: '';
+  position: absolute;
+  top: 14px; left: -50%;
+  width: 100%; height: 2px;
+  background: var(--border);
+  z-index: 0;
+  transition: background 0.5s;
+}
+.stage-dot:first-child::before { display:none; }
+.stage-dot.active::before,
+.stage-dot.done::before { background: var(--red); }
+
+.dot-circle {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem;
+  font-family: 'Courier Prime', monospace;
+  color: var(--text-dim);
+  position: relative; z-index: 1;
+  transition: all 0.4s;
+}
+.stage-dot.active .dot-circle {
+  border-color: var(--red);
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(180,30,30,0.45);
+}
+.stage-dot.done .dot-circle { border-color: #e8b0b0; background: #fdeaea; color: var(--red); }
+
+.dot-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 0.45rem;
+  text-align: center;
+  letter-spacing: 0.04em;
+  transition: color 0.3s;
+  max-width: 75px;
+}
+.stage-dot.active .dot-label { color: var(--red); font-weight:600; }
+
+/* Stage container */
+.stage-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stage-panel { display:none; flex-direction:column; animation: fadeStage 0.45s ease; }
+.stage-panel.active { display:flex; }
+@keyframes fadeStage {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0);    }
+}
+
+.stage-vis {
+  width: 100%;
+  height: 300px;
+  background: var(--surface2);
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.stage-info {
+  padding: 1.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.stage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.88rem;
+  letter-spacing: 0.18em;
+  color: var(--red);
+  text-transform: uppercase;
+}
+
+.stage-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.6rem;
+  color: var(--heading);
+  letter-spacing: 0.04em;
+}
+
+.stage-desc {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--text);
+  max-width: 640px;
+}
+
+.fact-card {
+  background: rgba(180,30,30,0.06);
+  border: 1px solid rgba(180,30,30,0.18);
+  border-left: 4px solid var(--red);
+  padding: 0.9rem 1.1rem;
+  border-radius: 3px;
+  font-size: 0.98rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.fact-card strong { color: var(--amber); }
+
+/* Nav */
+.stage-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.3rem 2rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.btn-nav {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  padding: 0.65rem 1.6rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  clip-path: polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);
+}
+.btn-nav:hover:not(:disabled) { border-color: var(--red); color: var(--red); }
+.btn-nav:disabled { opacity:0.3; cursor:not-allowed; }
+.btn-nav.primary { background:var(--red); border-color:var(--red); color:#fff; }
+.btn-nav.primary:hover { background:var(--orange); border-color:var(--orange); }
+
+.stage-counter {
+  font-family: 'Courier Prime', monospace;
+  font-size: 1rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+
+/* Canvas */
+canvas { position:absolute; inset:0; width:100%; height:100%; }
+
+/* Stage 1 lung vis */
+.lung-vis {
+  position: absolute; inset:0;
+  display: flex; align-items:center; justify-content:center;
+}
+.lung-vis svg { width:210px; height:210px; }
+
+@keyframes jiggle {
+  0%,100% { transform:rotate(-1deg)  scale(1.02); }
+  25%      { transform:rotate(1.5deg) scale(1.04); }
+  75%      { transform:rotate(-1.5deg) scale(1.01); }
+}
+.jiggling { animation:jiggle 0.4s ease-in-out infinite; }
+
+/* Stage 2 heart */
+.heart-container {
+  position: absolute; inset:0;
+  display: flex; align-items:center; justify-content:center;
+  gap: 4rem; flex-wrap:wrap; padding:1rem;
+}
+@keyframes heartbeat-fast {
+  0%,100%{ transform:scale(1);    }
+  10%    { transform:scale(1.28); }
+  20%    { transform:scale(1);    }
+  30%    { transform:scale(1.22); }
+  40%    { transform:scale(1);    }
+  50%    { transform:scale(1.25); }
+  60%    { transform:scale(1);    }
+}
+.heart-icon {
+  width:90px; height:90px;
+  animation: heartbeat-fast 0.65s ease-in-out infinite;
+  filter: drop-shadow(0 0 14px rgba(200,30,30,0.7));
+}
+
+.vessel-group { display:flex; flex-direction:column; gap:8px; }
+.vessel {
+  height:13px; background:#8b0000; border-radius:7px;
+  position:relative; overflow:hidden; transition:width 1s ease;
+}
+.vessel::after {
+  content:''; position:absolute; inset:2px; border-radius:5px;
+  background:rgba(200,50,50,0.4);
+  animation: pulse-flow 1s ease-in-out infinite;
+}
+@keyframes pulse-flow {
+  0%,100%{ opacity:0.4; }
+  50%    { opacity:0.9; }
+}
+
+/* Stage 3 cilia */
+.cilia-row {
+  position:absolute; bottom:0; left:0; right:0;
+  height:55px;
+  display:flex; align-items:flex-end; gap:3px; padding:0 10px;
+}
+.cilia {
+  width:3px; height:42px;
+  background: linear-gradient(to top,#2266cc,#66aaff);
+  border-radius:3px 3px 0 0;
+  transform-origin: bottom center;
+  animation: wave 1.5s ease-in-out infinite;
+  transition: height 3s ease, opacity 3s ease, background 2s;
+}
+@keyframes wave {
+  0%,100%{ transform:rotate(-8deg); }
+  50%    { transform:rotate(8deg);  }
+}
+
+/* Stage 4 – blackened lung + spots */
+.black-lung-fill {
+  fill: #111111;
+  transition: fill 1.5s ease;
+}
+.black-lung-stroke {
+  stroke: #333333;
+}
+
+.cancer-spot {
+  position:absolute; border-radius:50%;
+  background: radial-gradient(circle, #1a1a1a 30%, #000000 100%);
+  box-shadow: 0 0 6px rgba(0,0,0,0.7), 0 0 12px rgba(0,0,0,0.4);
+  animation: spot-pulse 1.4s ease-in-out infinite alternate;
+  transform: scale(0);
+  transition: transform 0.8s ease;
+}
+@keyframes spot-pulse {
+  from { box-shadow:0 0 4px rgba(0,0,0,0.6); }
+  to   { box-shadow:0 0 14px rgba(0,0,0,0.9), 0 0 4px #333; }
+}
+
+.emphysema-bubble {
+  position:absolute; border-radius:50%;
+  border: 2px solid rgba(80,50,20,0.45);
+  background: rgba(60,35,10,0.08);
+  animation: expand-bubble 2s ease-in-out infinite alternate;
+  transform: scale(0);
+  transition: transform 0.8s ease;
+}
+@keyframes expand-bubble {
+  from { transform:scale(0.9); opacity:0.5; }
+  to   { transform:scale(1.06); opacity:1;  }
+}
+
+/* Stage 5 recovery */
+.recovery-stat {
+  display: flex; align-items:flex-start; gap:0.8rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 4px;
+  background: rgba(26,140,80,0.06);
+  border: 1px solid rgba(26,140,80,0.22);
+  opacity: 0; transform:translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.recovery-stat.visible { opacity:1; transform:translateY(0); }
+.stat-dot {
+  width:9px; height:9px; border-radius:50%;
+  background: var(--green); margin-top:5px; flex-shrink:0;
+  box-shadow: 0 0 7px rgba(26,140,80,0.5);
+}
+.stat-text { font-size:0.98rem; color:var(--text); line-height:1.55; }
+.stat-text strong { color:var(--green); }
+
+/* ── BODY MAP ── */
+#body-map { max-width:980px; margin:4.5rem auto; padding:0 1rem; }
+.section-header { text-align:center; margin-bottom:2.5rem; }
+
+.body-map-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+@media(max-width:620px) {
+  .body-map-grid { grid-template-columns:1fr; }
+  .heart-container { gap:2rem; }
+}
+
+.organ-card {
+  background: var(--surface);
+  padding: 1.6rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative; overflow:hidden;
+}
+.organ-card::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(circle at 0% 50%,rgba(180,30,30,0.05) 0%,transparent 60%);
+  opacity:0; transition:opacity 0.3s;
+}
+.organ-card:hover { background:var(--surface2); }
+.organ-card:hover::before { opacity:1; }
+.organ-card:hover .organ-icon svg { filter:drop-shadow(0 0 8px currentColor); transform:scale(1.08); }
+
+.organ-icon { margin-bottom:1rem; }
+.organ-icon svg { width:52px; height:52px; transition:transform 0.3s, filter 0.3s; }
+
+.organ-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.65rem;
+  letter-spacing: 0.04em;
+  color: var(--heading);
+  margin-bottom: 0.45rem;
+}
+
+.organ-risk {
+  display: inline-block;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  padding: 0.2rem 0.6rem;
+  background: rgba(180,30,30,0.1);
+  color: var(--red);
+  border: 1px solid rgba(180,30,30,0.28);
+  margin-bottom: 0.8rem;
+}
+.organ-desc { font-size:0.95rem; color:var(--text-dim); line-height:1.65; }
+
+/* ── MODAL ── */
+.tooltip-modal {
+  display:none; position:fixed; inset:0; z-index:500;
+  align-items:center; justify-content:center; padding:1rem;
+}
+.tooltip-modal.visible { display:flex; }
+.modal-backdrop {
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(4px);
+}
+.modal-box {
+  position:relative; background:var(--bg);
+  border:1px solid var(--border); border-top:3px solid var(--red);
+  padding:2rem; max-width:440px; width:100%; border-radius:4px;
+  animation:popIn 0.25s ease; z-index:1;
+}
+@keyframes popIn {
+  from { transform:scale(0.92); opacity:0; }
+  to   { transform:scale(1);    opacity:1; }
+}
+.modal-close {
+  position:absolute; top:1rem; right:1rem;
+  background:none; border:none; color:var(--text-dim);
+  font-size:1.3rem; cursor:pointer; line-height:1;
+}
+.modal-close:hover { color:var(--red); }
+.modal-icon { margin-bottom:1rem; }
+.modal-name { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--heading); margin-bottom:0.2rem; }
+.modal-tag  { font-family:'Courier Prime',monospace; font-size:0.72rem; letter-spacing:0.15em; color:var(--red); margin-bottom:1rem; display:block; }
+.modal-body { font-size:0.98rem; line-height:1.72; color:var(--text); }
+.modal-stat { margin-top:1rem; padding:0.8rem; background:rgba(180,30,30,0.07); border-left:3px solid var(--red); font-size:0.92rem; color:var(--amber); }
+
+/* ── RESOURCES ── */
+#resources { max-width:980px; margin:0 auto 6rem; padding:0 1rem; }
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius:6px; overflow:hidden; margin-top:2rem;
+}
+.resource-card {
+  background:var(--surface); padding:1.6rem;
+  text-decoration:none; display:block; transition:background 0.2s; position:relative;
+}
+.resource-card:hover { background:var(--surface2); }
+.resource-card::after { content:'→'; position:absolute; top:1.5rem; right:1.5rem; color:var(--text-dim); transition:color 0.2s,transform 0.2s; }
+.resource-card:hover::after { color:var(--green); transform:translateX(3px); }
+.resource-tag  { font-family:'Courier Prime',monospace; font-size:0.72rem; letter-spacing:0.2em; color:var(--green); margin-bottom:0.5rem; }
+.resource-name { font-family:'Bebas Neue',sans-serif; font-size:1.35rem; color:var(--heading); margin-bottom:0.5rem; letter-spacing:0.04em; }
+.resource-desc { font-size:0.9rem; color:var(--text-dim); line-height:1.55; }
+
+/* ── FOOTER ── */
+footer {
+  border-top:1px solid var(--border); padding:2rem;
+  text-align:center; color:var(--text-dim); font-size:0.88rem; line-height:1.6;
+}
+footer a { color:var(--blue); text-decoration:none; }
+
+/* Pause btn */
+.pause-btn {
+  position:absolute; top:0.75rem; right:0.75rem;
+  background:rgba(255,255,255,0.7); border:1px solid var(--border);
+  color:var(--text-dim); width:32px; height:32px; border-radius:50%;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:0.7rem; z-index:10; transition:border-color 0.2s,color 0.2s;
+}
+.pause-btn:hover { border-color:var(--red); color:var(--red); }
+
+/* Healing sparkle */
+@keyframes sparkle-pulse {
+  0%,100%{ opacity:0.25; transform:scale(1);   }
+  50%    { opacity:1;    transform:scale(2);   }
+}
+.sparkle { animation:sparkle-pulse 2s ease-in-out infinite; }
+.sparkle:nth-child(1){ animation-delay:0s;    }
+.sparkle:nth-child(2){ animation-delay:0.5s;  }
+.sparkle:nth-child(3){ animation-delay:1s;    }
+.sparkle:nth-child(4){ animation-delay:1.5s;  }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-eyebrow">⚠ Health Education · No Smoking</div>
+
+  <div class="lung-hero">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 20 C35 20 20 30 18 50 C16 68 22 82 30 85 C36 87 40 82 40 75 L40 45 C40 35 45 28 50 25"
+            fill="none" stroke="#c91e1e" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M30 55 C25 58 22 65 25 72" stroke="#c91e1e" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/>
+      <path d="M26 48 C22 52 20 60 23 68" stroke="#c91e1e" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+      <path d="M50 20 C65 20 80 30 82 50 C84 68 78 82 70 85 C64 87 60 82 60 75 L60 45 C60 35 55 28 50 25"
+            fill="none" stroke="#c91e1e" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M70 55 C75 58 78 65 75 72" stroke="#c91e1e" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/>
+      <path d="M74 48 C78 52 80 60 77 68" stroke="#c91e1e" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+      <line x1="50" y1="20" x2="50" y2="8" stroke="#c91e1e" stroke-width="3" stroke-linecap="round"/>
+      <line x1="44" y1="14" x2="56" y2="14" stroke="#c91e1e" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+      <path d="M50 20 C35 20 20 30 18 50 C16 68 22 82 30 85 C36 87 40 82 40 75 L40 45 C40 35 45 28 50 25 C55 28 60 35 60 45 L60 75 C60 82 64 87 70 85 C78 82 84 68 82 50 C80 30 65 20 50 20Z"
+            fill="rgba(200,30,30,0.07)"/>
+    </svg>
+  </div>
+
+  <div class="hero-eyebrow" style="margin-bottom:0.4rem">The Truth About Smoking</div>
+  <h1 class="hero-title">WHAT SMOKING<br><span>DOES TO YOU</span></h1>
+  <p class="hero-sub">Learn what happens to your body when you smoke. Click through each step to see the damage — and how your body heals when you stop.</p>
+  <button class="btn-start" onclick="document.getElementById('simulation').scrollIntoView({behavior:'smooth'})">Start Simulation ↓</button>
+
+  <div class="scroll-hint">
+    <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+      <rect x="1" y="1" width="14" height="22" rx="7" stroke="currentColor" stroke-width="1.5"/>
+      <circle id="scrollWheel" cx="8" cy="8" r="2" fill="currentColor"/>
+    </svg>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<!-- ── TICKER ── -->
+<div id="stats-ticker">
+  <div class="ticker-inner" id="tickerContent"></div>
+</div>
+
+<!-- ── SIMULATION ── -->
+<section id="simulation">
+  <div class="sim-header">
+    <p class="section-label">Click Next to go through each step</p>
+    <h2>STAGES OF DAMAGE</h2>
+  </div>
+
+  <div class="stage-progress" id="stageProgress"></div>
+
+  <div class="stage-container">
+
+    <!-- STAGE 1: Inhalation -->
+    <div class="stage-panel active" id="stage-1">
+      <div class="stage-vis" id="vis-1">
+        <canvas id="smoke-canvas"></canvas>
+        <div class="lung-vis" id="lung-anim-1">
+          <svg id="lung-svg" viewBox="0 0 100 100" fill="none">
+            <path id="llung" d="M50 20 C35 20 20 30 18 50 C16 68 22 82 30 85 C36 87 40 82 40 75 L40 45 C40 35 45 28 50 25"
+                  fill="rgba(200,30,30,0.1)" stroke="#c91e1e" stroke-width="2.5" stroke-linecap="round"/>
+            <path id="rlung" d="M50 20 C65 20 80 30 82 50 C84 68 78 82 70 85 C64 87 60 82 60 75 L60 45 C60 35 55 28 50 25"
+                  fill="rgba(200,30,30,0.1)" stroke="#c91e1e" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="50" y1="20" x2="50" y2="8" stroke="#c91e1e" stroke-width="3" stroke-linecap="round"/>
+            <circle id="mucus1" cx="32" cy="60" r="0" fill="rgba(160,120,30,0.65)" opacity="0"/>
+            <circle id="mucus2" cx="68" cy="65" r="0" fill="rgba(160,120,30,0.65)" opacity="0"/>
+            <circle id="mucus3" cx="25" cy="74" r="0" fill="rgba(160,120,30,0.50)" opacity="0"/>
+          </svg>
+        </div>
+        <button class="pause-btn" id="pauseBtn1" onclick="togglePause(1)" title="Pause/Play">⏸</button>
+      </div>
+      <div class="stage-info">
+        <span class="stage-badge">◉ Step 01 — Breathing In Smoke</span>
+        <h3 class="stage-title">THE SMOKE GOES IN</h3>
+        <p class="stage-desc">When you smoke, the smoke goes into your lungs. The smoke has more than 7,000 chemicals in it. Your lungs get red and hurt right away. They make extra liquid (mucus) to try to push the chemicals out.</p>
+        <div class="fact-card">💨 <strong>Right away:</strong> A gas called carbon monoxide enters your blood. It takes the place of oxygen. Your airways swell up and your body makes 3 times more mucus than normal.</div>
+      </div>
+    </div>
+
+    <!-- STAGE 2: Short-term Effects -->
+    <div class="stage-panel" id="stage-2">
+      <div class="stage-vis" id="vis-2">
+        <div class="heart-container">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.8rem">
+            <div class="heart-icon">
+              <svg viewBox="0 0 80 80" fill="none">
+                <path d="M40 65 C40 65 10 48 10 28 C10 18 18 12 28 14 C33 15 37 18 40 22 C43 18 47 15 52 14 C62 12 70 18 70 28 C70 48 40 65 40 65Z"
+                      fill="#cc1c1c" stroke="#e05050" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div id="bpm-display" style="font-family:'Courier Prime',monospace;font-size:0.9rem;color:#c91e1e;letter-spacing:0.1em;font-weight:700">♥ 110 BPM</div>
+            <div style="font-size:0.82rem;color:var(--text-dim)">HEART RATE ↑</div>
+          </div>
+          <div class="vessel-group">
+            <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.4rem;font-family:'Courier Prime',monospace;letter-spacing:0.1em">BLOOD VESSELS</div>
+            <div class="vessel" id="v1" style="width:145px"></div>
+            <div class="vessel" id="v2" style="width:115px"></div>
+            <div class="vessel" id="v3" style="width:92px"></div>
+            <div class="vessel" id="v4" style="width:125px"></div>
+            <div style="font-size:0.8rem;color:var(--red);margin-top:0.4rem;font-family:'Courier Prime'">CONSTRICTING ▼</div>
+          </div>
+        </div>
+        <canvas id="cough-canvas" style="position:absolute;inset:0;pointer-events:none"></canvas>
+      </div>
+      <div class="stage-info">
+        <span class="stage-badge">◉ Step 02 — What Happens Soon After</span>
+        <h3 class="stage-title">YOUR BODY IS STRESSED</h3>
+        <p class="stage-desc">Nicotine — a drug in cigarettes — makes your heart beat faster. Your blood vessels (the tubes that carry blood) get smaller. This means your blood cannot move well. Your blood pressure goes up. You may cough and feel out of breath.</p>
+        <div class="fact-card">❤️ <strong>Heart danger:</strong> Each cigarette makes your heart beat too fast for 20–30 minutes. Smokers get heart disease 2 to 4 times more often than non-smokers. — <em>CDC</em></div>
+      </div>
+    </div>
+
+    <!-- STAGE 3: Tar Buildup -->
+    <div class="stage-panel" id="stage-3">
+      <div class="stage-vis" id="vis-3">
+        <div style="position:absolute;inset:0;background:#ffffff;overflow:hidden">
+          <svg style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:210px;height:210px;opacity:0.85" viewBox="0 0 100 100" fill="none">
+            <path d="M50 20 C35 20 20 30 18 50 C16 68 22 82 30 85 C36 87 40 82 40 75 L40 45 C40 35 45 28 50 25 C55 28 60 35 60 45 L60 75 C60 82 64 87 70 85 C78 82 84 68 82 50 C80 30 65 20 50 20Z"
+                  fill="rgba(180,100,20,0.12)" stroke="rgba(140,80,10,0.55)" stroke-width="1.5"/>
+          </svg>
+          <div id="tar-overlay" style="position:absolute;top:0;left:0;right:0;height:0%;background:linear-gradient(to bottom,#2a1804,#111008);opacity:0.9"></div>
+          <div class="cilia-row" id="cilia-row"></div>
+        </div>
+      </div>
+      <div class="stage-info">
+        <span class="stage-badge">◉ Step 03 — Tar Builds Up</span>
+        <h3 class="stage-title">TAR COATS YOUR LUNGS</h3>
+        <p class="stage-desc">Every cigarette puts a sticky black substance called tar inside your lungs. Tar covers the tiny hairs (cilia) in your lungs. These small hairs clean your lungs by pushing out dirt and germs. When tar covers them, they stop working and die.</p>
+        <div class="fact-card">🚬 <strong>Tar fact:</strong> A person who smokes one pack a day breathes in about <strong>1 cup of tar every year</strong>. The tiny hairs in the lungs die after a few years of smoking.</div>
+      </div>
+    </div>
+
+    <!-- STAGE 4: Long-term Damage — BLACK LUNG -->
+    <div class="stage-panel" id="stage-4">
+      <div class="stage-vis" id="vis-4">
+        <div style="position:absolute;inset:0;background:#ffffff;overflow:hidden;display:flex;align-items:center;justify-content:center">
+          <!-- Blackened lung SVG -->
+          <svg id="damaged-lung-svg" style="width:230px;height:230px;position:relative;z-index:2" viewBox="0 0 100 100" fill="none">
+            <!-- left lobe -->
+            <path d="M50 20 C35 20 20 30 18 50 C16 68 22 82 30 85 C36 87 40 82 40 75 L40 45 C40 35 45 28 50 25"
+                  class="black-lung-fill black-lung-stroke" stroke-width="2" stroke-linecap="round"/>
+            <!-- right lobe -->
+            <path d="M50 20 C65 20 80 30 82 50 C84 68 78 82 70 85 C64 87 60 82 60 75 L60 45 C60 35 55 28 50 25"
+                  class="black-lung-fill black-lung-stroke" stroke-width="2" stroke-linecap="round"/>
+            <!-- trachea -->
+            <line x1="50" y1="20" x2="50" y2="8" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- black spot patches inside lungs (SVG-level) -->
+            <circle cx="30" cy="55" r="5.5" fill="#000" opacity="0.85"/>
+            <circle cx="38" cy="68" r="4"   fill="#000" opacity="0.8"/>
+            <circle cx="25" cy="70" r="3.5" fill="#0a0a0a" opacity="0.75"/>
+            <circle cx="35" cy="42" r="3"   fill="#000" opacity="0.7"/>
+            <circle cx="69" cy="52" r="5"   fill="#000" opacity="0.85"/>
+            <circle cx="63" cy="66" r="4.5" fill="#000" opacity="0.8"/>
+            <circle cx="74" cy="67" r="3.5" fill="#0a0a0a" opacity="0.75"/>
+            <circle cx="67" cy="38" r="3"   fill="#000" opacity="0.7"/>
+            <circle cx="48" cy="58" r="4"   fill="#000" opacity="0.8"/>
+            <circle cx="52" cy="72" r="3"   fill="#0a0a0a" opacity="0.7"/>
+          </svg>
+          <!-- dynamic spots container on top -->
+          <div id="spots-container" style="position:absolute;inset:0;z-index:3"></div>
+        </div>
+      </div>
+      <div class="stage-info">
+        <span class="stage-badge">◉ Step 04 — Long-Term Damage</span>
+        <h3 class="stage-title">SERIOUS LUNG DAMAGE</h3>
+        <p class="stage-desc">After many years of smoking, the lungs turn black and get smaller. They cannot work well anymore. Bad cells (cancer cells) start to grow. Air pockets form in the lungs — this is called emphysema. It makes breathing very hard.</p>
+        <div class="fact-card">☣️ <strong>Lung cancer:</strong> Smoking causes <strong>9 out of 10 lung cancer deaths</strong>. Only 18 out of 100 people with lung cancer are still alive after 5 years. Smoking causes 1.8 million cancer deaths every year around the world. — <em>WHO/CDC</em></div>
+      </div>
+    </div>
+
+    <!-- STAGE 5: Recovery -->
+    <div class="stage-panel" id="stage-5">
+      <div class="stage-vis" id="vis-5">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,#edfaf2 0%,#e0f5ea 100%);overflow:hidden;display:flex;align-items:center;justify-content:center">
+          <svg style="width:210px;height:210px;filter:drop-shadow(0 0 22px rgba(26,140,80,0.35));animation:breathe 3s ease-in-out infinite" viewBox="0 0 100 100" fill="none">
+            <path d="M50 20 C35 20 20 30 18 50 C16 68 22 82 30 85 C36 87 40 82 40 75 L40 45 C40 35 45 28 50 25 C55 28 60 35 60 45 L60 75 C60 82 64 87 70 85 C78 82 84 68 82 50 C80 30 65 20 50 20Z"
+                  fill="rgba(26,140,80,0.14)" stroke="#1a8c50" stroke-width="2"/>
+            <path d="M30 55 C25 58 22 65 25 72" stroke="#1a8c50" stroke-width="1.5" stroke-linecap="round" opacity="0.65"/>
+            <path d="M26 46 C22 50 20 58 23 66" stroke="#1a8c50" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+            <path d="M70 55 C75 58 78 65 75 72" stroke="#1a8c50" stroke-width="1.5" stroke-linecap="round" opacity="0.65"/>
+            <path d="M74 46 C78 50 80 58 77 66" stroke="#1a8c50" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+            <line x1="50" y1="20" x2="50" y2="8" stroke="#1a8c50" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="35" cy="40" r="1.5" fill="#1a8c50" class="sparkle"/>
+            <circle cx="65" cy="45" r="1.2" fill="#1a8c50" class="sparkle"/>
+            <circle cx="28" cy="60" r="1"   fill="#1a8c50" class="sparkle"/>
+            <circle cx="72" cy="58" r="1.3" fill="#1a8c50" class="sparkle"/>
+          </svg>
+        </div>
+      </div>
+      <div class="stage-info">
+        <span class="stage-badge">◉ Step 05 — If You Stop Smoking</span>
+        <h3 class="stage-title">YOUR BODY CAN HEAL</h3>
+        <p class="stage-desc">Good news! Your body starts to get better very quickly after you stop smoking. The healing happens step by step. It does not matter how long you have smoked — it is always a good idea to stop.</p>
+        <div id="recovery-stats" style="display:flex;flex-direction:column;gap:0.45rem;margin-top:0.2rem"></div>
+      </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="stage-nav">
+      <button class="btn-nav" id="prevBtn" onclick="changeStage(-1)" disabled>← Previous</button>
+      <span class="stage-counter" id="stageCounter">01 / 05</span>
+      <button class="btn-nav primary" id="nextBtn" onclick="changeStage(1)">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── BODY MAP ── -->
+<section id="body-map">
+  <div class="section-header">
+    <p class="section-label">Click a body part to learn more</p>
+    <h2 class="section-title">PARTS OF YOUR BODY THAT SMOKING HURTS</h2>
+  </div>
+  <div class="body-map-grid" id="organGrid"></div>
+</section>
+
+<!-- ── RESOURCES ── -->
+<section id="resources">
+  <div class="section-header">
+    <p class="section-label">Free help to stop smoking</p>
+    <h2 class="section-title">WANT TO QUIT? GET HELP</h2>
+  </div>
+  <div class="resources-grid">
+    <a href="https://smokefree.gov" target="_blank" rel="noopener" class="resource-card">
+      <div class="resource-tag">FREE HELP</div>
+      <div class="resource-name">Smokefree.gov</div>
+      <div class="resource-desc">Free apps, tools, and tips to help you stop smoking. Easy to use.</div>
+    </a>
+    <a href="https://www.cdc.gov/tobacco/quit_smoking/" target="_blank" rel="noopener" class="resource-card">
+      <div class="resource-tag">US GOVERNMENT</div>
+      <div class="resource-name">CDC Quit Smoking</div>
+      <div class="resource-desc">Simple steps and free help from US health experts to stop smoking.</div>
+    </a>
+    <a href="tel:1-800-784-8669" class="resource-card">
+      <div class="resource-tag">CALL FOR FREE — 24 HOURS</div>
+      <div class="resource-name">1-800-QUIT-NOW</div>
+      <div class="resource-desc">Call this number any time. A real person will help you. Many languages available.</div>
+    </a>
+    <a href="https://www.who.int/campaigns/no-tobacco-day" target="_blank" rel="noopener" class="resource-card">
+      <div class="resource-tag">WORLD HEALTH ORGANIZATION</div>
+      <div class="resource-name">World No Tobacco Day</div>
+      <div class="resource-desc">A world campaign to help everyone stop using tobacco. Resources in many languages.</div>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>Information from <a href="https://www.who.int" target="_blank">WHO</a>, <a href="https://www.cdc.gov" target="_blank">CDC</a>, and <a href="https://www.cancer.gov" target="_blank">National Cancer Institute</a>.</p>
+  <p style="margin-top:0.5rem;opacity:0.5">This page is for learning only. Talk to a doctor for medical advice.</p>
+</footer>
+
+<!-- ── ORGAN MODAL ── -->
+<div class="tooltip-modal" id="organModal">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-icon" id="modalIcon"></div>
+    <div class="modal-name" id="modalName"></div>
+    <span class="modal-tag" id="modalTag"></span>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-stat" id="modalStat"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────────
+
+const tickerFacts = [
+  { text:"1 cigarette makes your life shorter by",  hl:"11 minutes"               },
+  { text:"Smoking kills more than",                 hl:"8 million people every year"},
+  { text:"Cigarette smoke has more than",           hl:"7,000 harmful chemicals"   },
+  { text:"9 out of 10 lung cancers are caused by",  hl:"smoking"                   },
+  { text:"Smokers live, on average,",               hl:"10 fewer years"            },
+  { text:"After 20 minutes without smoking,",       hl:"blood pressure goes down"  },
+  { text:"After 1 year without smoking,",           hl:"heart disease risk drops 50%"},
+  { text:"Second-hand smoke kills",                 hl:"41,000 people per year in the US"},
+  { text:"Nicotine gets to your brain in",          hl:"only 10 seconds"           },
+  { text:"Smoking costs the US",                    hl:"$600 billion every year"   },
+];
+
+const stageLabels = [
+  {label:"Inhalation", num:"01"},
+  {label:"Short-term", num:"02"},
+  {label:"Tar Buildup", num:"03"},
+  {label:"Long-term",  num:"04"},
+  {label:"Recovery",   num:"05"},
+];
+
+const organs = [
+  {
+    name:"Lungs", risk:"VERY HIGH DANGER",
+    desc:"Smoke goes directly into the lungs. The lungs get worse with every cigarette.",
+    icon:`<svg viewBox="0 0 48 48" fill="none" style="color:#c91e1e"><path d="M24 10C18 10 10 15 9 24C8 33 11 40 15 42C18 43.5 20 41 20 37L20 22C20 17 22 13 24 12C26 13 28 17 28 22L28 37C28 41 30 43.5 33 42C37 40 40 33 39 24C38 15 30 10 24 10Z" fill="rgba(200,30,30,0.12)" stroke="currentColor" stroke-width="1.5"/></svg>`,
+    fullDesc:"Smoke puts tar and bad chemicals inside your lungs. Small hairs called cilia clean your lungs — but smoking kills them. Without these hairs, dirt and germs stay inside. This causes serious sickness like COPD (hard to breathe) and lung cancer.",
+    stat:"🫁 Smokers get lung cancer 15 to 30 times more often than non-smokers. Smoking causes 85 out of 100 cases of COPD (breathing disease)."
+  },
+  {
+    name:"Heart", risk:"HIGH DANGER",
+    desc:"Nicotine makes the heart beat too fast and work too hard.",
+    icon:`<svg viewBox="0 0 48 48" fill="none" style="color:#c91e1e"><path d="M24 38C24 38 8 28 8 17C8 11.5 11.5 8 16 8.5C19 9 22 11 24 14C26 11 29 9 32 8.5C36.5 8 40 11.5 40 17C40 28 24 38 24 38Z" fill="rgba(200,30,30,0.12)" stroke="currentColor" stroke-width="1.5"/></svg>`,
+    fullDesc:"Nicotine is a drug in cigarettes. It makes your heart beat faster and your blood pressure go up. Smoke also has a gas called carbon monoxide — it stops your blood from carrying oxygen. After many years, the blood vessels to your heart get blocked. This can cause a heart attack.",
+    stat:"❤️ Smokers get heart disease 2 to 4 times more than non-smokers. Smoking is the main cause of heart attacks in people under 50."
+  },
+  {
+    name:"Brain", risk:"HIGH DANGER",
+    desc:"Nicotine changes your brain and makes you addicted in just a few days.",
+    icon:`<svg viewBox="0 0 48 48" fill="none" style="color:#c94d10"><ellipse cx="22" cy="24" rx="11" ry="13" fill="rgba(200,80,16,0.1)" stroke="currentColor" stroke-width="1.5"/><path d="M22 13C22 13 28 16 30 22C32 28 30 35 26 37" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/><path d="M18 14C18 14 14 17 13 23" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/></svg>`,
+    fullDesc:"Nicotine reaches your brain in just 10 seconds. It makes your brain release a happy chemical called dopamine. Over time, your brain needs more and more nicotine to feel normal — this is called addiction. Smoking also makes you more likely to have a stroke (sudden brain damage).",
+    stat:"🧠 Smokers are 2 times more likely to have a stroke. Every cigarette makes it harder for blood to reach the brain."
+  },
+  {
+    name:"Mouth & Throat", risk:"HIGH DANGER",
+    desc:"Smoke first touches your mouth and throat. It has over 60 cancer-causing chemicals.",
+    icon:`<svg viewBox="0 0 48 48" fill="none" style="color:#9e5f00"><rect x="14" y="18" width="20" height="14" rx="7" fill="rgba(160,96,0,0.1)" stroke="currentColor" stroke-width="1.5"/><path d="M18 22C19 25 20 26 24 26C28 26 29 25 30 22" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+    fullDesc:"Smoke first touches your mouth, throat, and voice box. Smokers lose teeth and get gum disease 2 times more often. The chemicals in smoke can cause cancer in the mouth, throat, and food pipe (esophagus). Hot smoke also hurts the soft skin inside your mouth every time you smoke.",
+    stat:"👄 Smoking makes you 6 to 10 times more likely to get mouth cancer. 9 out of 10 people with mouth cancer use tobacco. — NCI"
+  },
+  {
+    name:"Kidneys & Bladder", risk:"MEDIUM–HIGH DANGER",
+    desc:"The kidneys clean your blood. The bad chemicals from smoke collect in the bladder.",
+    icon:`<svg viewBox="0 0 48 48" fill="none" style="color:#1558b8"><ellipse cx="18" cy="24" rx="6" ry="10" fill="rgba(21,88,184,0.1)" stroke="currentColor" stroke-width="1.5"/><ellipse cx="30" cy="24" rx="6" ry="10" fill="rgba(21,88,184,0.1)" stroke="currentColor" stroke-width="1.5"/></svg>`,
+    fullDesc:"Your kidneys clean harmful chemicals from your blood. When you smoke, the kidneys collect bad chemicals and send them to your bladder (where urine is stored). These chemicals sit in the bladder for a long time and can cause cancer. Smoking also damages the kidneys over time.",
+    stat:"🫘 Smokers are 3 times more likely to get kidney cancer and 4 times more likely to get bladder cancer."
+  },
+  {
+    name:"Skin & Aging", risk:"VISIBLE DAMAGE",
+    desc:"Smoking makes your skin look old and tired much faster.",
+    icon:`<svg viewBox="0 0 48 48" fill="none" style="color:#7a4faa"><circle cx="24" cy="24" r="14" fill="rgba(122,79,170,0.1)" stroke="currentColor" stroke-width="1.5"/><path d="M18 20 Q24 16 30 20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/><path d="M17 28 Q24 32 31 28" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/></svg>`,
+    fullDesc:"Smoking reduces the blood that goes to your skin. It also destroys collagen — the substance that keeps skin smooth and firm. Without collagen, your skin gets wrinkles and sags. Smokers often look 10 to 20 years older than they really are. Cuts and wounds also heal much more slowly.",
+    stat:"🧴 Smokers get deep wrinkles and loose skin — often 10 years earlier than people who do not smoke."
+  },
+];
+
+const recoveryData = [
+  {time:"20 minutes", fact:"Your blood pressure and heart rate go back to normal."},
+  {time:"8 hours",    fact:"The bad gas (carbon monoxide) in your blood drops by half. Your blood gets more oxygen."},
+  {time:"72 hours",   fact:"Your lungs start to clean themselves. It is easier to breathe."},
+  {time:"1 month",    fact:"The tiny hairs (cilia) in your lungs start to grow back. You get sick less often."},
+  {time:"1 year",     fact:"Your chance of getting heart disease is cut in half. Your lungs work up to 30% better."},
+  {time:"10 years",   fact:"Your chance of getting lung cancer is almost half the risk of someone who still smokes."},
+];
+
+// ── TICKER ──────────────────────────────────────────────────────────────────
+(function(){
+  const el = document.getElementById('tickerContent');
+  const doubled = [...tickerFacts,...tickerFacts];
+  el.innerHTML = doubled.map(f=>
+    `<span class="ticker-item">▸ ${f.text} <span>${f.hl}</span></span>`
+  ).join('');
+})();
+
+// ── STAGE PROGRESS ──────────────────────────────────────────────────────────
+(function(){
+  const el = document.getElementById('stageProgress');
+  stageLabels.forEach((s,i)=>{
+    const d = document.createElement('div');
+    d.className = 'stage-dot'+(i===0?' active':'');
+    d.onclick = ()=>goToStage(i+1);
+    d.innerHTML = `<div class="dot-circle">${s.num}</div><div class="dot-label">${s.label}</div>`;
+    el.appendChild(d);
+  });
+})();
+
+// ── STAGE NAVIGATION ────────────────────────────────────────────────────────
+let currentStage = 1;
+const TOTAL = 5;
+
+function changeStage(dir){
+  const next = currentStage + dir;
+  if(next<1||next>TOTAL) return;
+  goToStage(next);
+}
+
+function goToStage(n){
+  document.getElementById('stage-'+currentStage).classList.remove('active');
+  currentStage = n;
+  document.getElementById('stage-'+currentStage).classList.add('active');
+  document.querySelectorAll('.stage-dot').forEach((d,i)=>{
+    d.classList.remove('active','done');
+    if(i+1===currentStage) d.classList.add('active');
+    if(i+1<currentStage)   d.classList.add('done');
+  });
+  document.getElementById('prevBtn').disabled = currentStage===1;
+  document.getElementById('nextBtn').disabled = currentStage===TOTAL;
+  document.getElementById('nextBtn').textContent = currentStage===TOTAL ? 'Done ✓' : 'Next →';
+  document.getElementById('stageCounter').textContent = `0${currentStage} / 0${TOTAL}`;
+  triggerAnim(currentStage);
+}
+
+// ── ANIMATION STATE ─────────────────────────────────────────────────────────
+let smokeAnimId=null, smokePaused=false, smokeParticles=[];
+let coughAnimId=null;
+let tarAnimId=null, tarLevel=0;
+
+function togglePause(stage){
+  if(stage===1){
+    smokePaused = !smokePaused;
+    document.getElementById('pauseBtn1').textContent = smokePaused ? '▶' : '⏸';
+  }
+}
+
+// ── STAGE 1: SMOKE ──────────────────────────────────────────────────────────
+function initSmoke(){
+  if(smokeAnimId) cancelAnimationFrame(smokeAnimId);
+  smokeParticles=[]; smokePaused=false;
+  const canvas = document.getElementById('smoke-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width=canvas.offsetWidth||800; canvas.height=canvas.offsetHeight||300; }
+  resize();
+
+  function newP(){
+    const cx = canvas.width/2;
+    return { x:cx+(Math.random()-.5)*22, y:10,
+             vy:1.3+Math.random()*1.8, vx:(Math.random()-.5)*0.6,
+             size:5+Math.random()*9, opBase:0.3+Math.random()*0.3,
+             life:0, maxLife:55+Math.random()*40 };
+  }
+
+  let jiggling=false, jiggleT=null, lungActivated=false;
+  function draw(){
+    if(smokePaused){ smokeAnimId=requestAnimationFrame(draw); return; }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(Math.random()<0.5) smokeParticles.push(newP());
+    smokeParticles = smokeParticles.filter(p=>p.life<p.maxLife);
+    let reached=false;
+    smokeParticles.forEach(p=>{
+      p.life++; p.x+=p.vx; p.y+=p.vy;
+      const t=p.life/p.maxLife;
+      const alpha=t<0.25?t/0.25:1-(t-0.25)/0.75;
+      const d=Math.floor(140-t*100);
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.size*(1+t*0.4),0,Math.PI*2);
+      ctx.fillStyle=`rgba(${d},${d-4},${d-8},${p.opBase*alpha*0.7})`;
+      ctx.fill();
+      if(p.y>canvas.height*0.38) reached=true;
+    });
+    if(reached&&!jiggling){
+      jiggling=true;
+      const lv=document.getElementById('lung-anim-1');
+      if(lv) lv.classList.add('jiggling');
+      clearTimeout(jiggleT);
+      jiggleT=setTimeout(()=>{ jiggling=false; if(lv) lv.classList.remove('jiggling'); },700);
+    }
+    if(reached&&!lungActivated){
+      lungActivated=true;
+      const ll=document.getElementById('llung'); const rl=document.getElementById('rlung');
+      if(ll) ll.setAttribute('fill','rgba(200,30,30,0.3)');
+      if(rl) rl.setAttribute('fill','rgba(200,30,30,0.3)');
+      [['mucus1',3],['mucus2',3.5],['mucus3',2.8]].forEach(([id,r])=>{
+        const el=document.getElementById(id);
+        if(el){ el.setAttribute('r',r); el.setAttribute('opacity','0.78'); }
+      });
+    }
+    smokeAnimId=requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ── STAGE 2: HEART / COUGH ──────────────────────────────────────────────────
+function initCough(){
+  if(coughAnimId) cancelAnimationFrame(coughAnimId);
+  const canvas=document.getElementById('cough-canvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  function resize(){ canvas.width=canvas.offsetWidth||800; canvas.height=canvas.offsetHeight||300; }
+  resize();
+  let drops=[], frame=0;
+  function cough(){
+    const cx=canvas.width*(0.35+Math.random()*0.3), cy=canvas.height*0.6;
+    for(let i=0;i<10;i++){
+      const ang=(Math.random()-.5)*1.4, spd=2+Math.random()*4;
+      drops.push({ x:cx,y:cy, vx:Math.cos(ang)*spd*(Math.random()>.5?1:-1),
+                   vy:-(spd*0.7+Math.random()), size:2+Math.random()*3,
+                   life:0,maxLife:35+Math.random()*20, hue:Math.random()>.5?'#786020':'#907030' });
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    frame++;
+    if(frame%80===0) cough();
+    drops=drops.filter(d=>d.life<d.maxLife);
+    drops.forEach(d=>{
+      d.life++; d.x+=d.vx; d.y+=d.vy; d.vy+=0.15;
+      const a=1-d.life/d.maxLife;
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.size,0,Math.PI*2);
+      ctx.fillStyle=d.hue+Math.floor(a*200).toString(16).padStart(2,'0');
+      ctx.fill();
+    });
+    const bpm=105+Math.floor(Math.sin(Date.now()/250)*8);
+    const bpmEl=document.getElementById('bpm-display');
+    if(bpmEl) bpmEl.textContent=`♥ ${bpm} BPM`;
+    const vBases=[145,115,92,125];
+    const pulse=(Math.sin(Date.now()/700)+1)/2;
+    ['v1','v2','v3','v4'].forEach((id,i)=>{
+      const el=document.getElementById(id);
+      if(el) el.style.width=(vBases[i]*(0.52+pulse*0.48))+'px';
+    });
+    coughAnimId=requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ── STAGE 3: TAR ────────────────────────────────────────────────────────────
+function initTar(){
+  const ciliaRow=document.getElementById('cilia-row');
+  const tarOverlay=document.getElementById('tar-overlay');
+  if(!ciliaRow) return;
+  ciliaRow.innerHTML='';
+  const count=Math.max(20,Math.floor((ciliaRow.offsetWidth||300)/7));
+  for(let i=0;i<count;i++){
+    const c=document.createElement('div');
+    c.className='cilia';
+    c.style.animationDelay=(i*0.04)+'s';
+    c.style.animationDuration=(1.1+Math.random()*0.7)+'s';
+    ciliaRow.appendChild(c);
+  }
+  tarLevel=0;
+  const cilias=ciliaRow.querySelectorAll('.cilia');
+  function step(){
+    if(tarLevel>=80) return;
+    tarLevel+=0.2;
+    if(tarOverlay) tarOverlay.style.height=tarLevel+'%';
+    const killCount=Math.floor((tarLevel/80)*cilias.length);
+    cilias.forEach((c,i)=>{
+      if(i<killCount){
+        const prog=1-i/Math.max(1,killCount);
+        c.style.height=Math.max(2,42*(1-prog*0.95))+'px';
+        c.style.opacity=Math.max(0.04,1-prog*0.92);
+        c.style.background='#1a1005'; c.style.animation='none';
+      }
+    });
+    tarAnimId=requestAnimationFrame(step);
+  }
+  step();
+}
+
+// ── STAGE 4: DAMAGE (black spots) ───────────────────────────────────────────
+function initDamage(){
+  const container=document.getElementById('spots-container');
+  const vis=document.getElementById('vis-4');
+  if(!container||!vis) return;
+  container.innerHTML='';
+  const W=vis.offsetWidth||600, H=vis.offsetHeight||300;
+
+  // Additional large black spots animate in over the lung
+  const spotData=[
+    {x:38,y:48,s:18},{x:54,y:55,s:14},{x:30,y:63,s:11},{x:63,y:44,s:16},
+    {x:47,y:67,s:12},{x:36,y:74,s:9},{x:60,y:68,s:13},{x:43,y:34,s:8},
+    {x:55,y:32,s:10},{x:66,y:74,s:8},{x:27,y:52,s:10},{x:70,y:55,s:9}
+  ];
+  spotData.forEach((p,i)=>{
+    const el=document.createElement('div');
+    el.className='cancer-spot';
+    el.style.cssText=`width:${p.s}px;height:${p.s}px;left:${W*p.x/100}px;top:${H*p.y/100}px`;
+    container.appendChild(el);
+    setTimeout(()=>el.style.transform='scale(1)', i*180+250);
+  });
+
+  // Emphysema bubbles (brownish outlines)
+  const bubbleData=[
+    {x:28,y:36,s:34},{x:64,y:42,s:28},{x:42,y:26,s:22},{x:57,y:30,s:30},{x:36,y:54,s:26},{x:62,y:60,s:20}
+  ];
+  bubbleData.forEach((p,i)=>{
+    const el=document.createElement('div');
+    el.className='emphysema-bubble';
+    el.style.cssText=`width:${p.s}px;height:${p.s}px;left:${W*p.x/100}px;top:${H*p.y/100}px`;
+    container.appendChild(el);
+    setTimeout(()=>el.style.transform='scale(1)', i*280+700);
+  });
+}
+
+// ── STAGE 5: RECOVERY ───────────────────────────────────────────────────────
+function initRecovery(){
+  const container=document.getElementById('recovery-stats');
+  if(!container) return;
+  container.innerHTML='';
+  recoveryData.forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='recovery-stat';
+    div.innerHTML=`<div class="stat-dot"></div><div class="stat-text"><strong>${s.time}:</strong> ${s.fact}</div>`;
+    container.appendChild(div);
+    setTimeout(()=>div.classList.add('visible'), i*270+150);
+  });
+}
+
+// ── TRIGGER ─────────────────────────────────────────────────────────────────
+function triggerAnim(stage){
+  if(stage===1) initSmoke();
+  if(stage===2) initCough();
+  if(stage===3) initTar();
+  if(stage===4) initDamage();
+  if(stage===5) initRecovery();
+}
+
+// ── ORGAN GRID ──────────────────────────────────────────────────────────────
+(function(){
+  const grid=document.getElementById('organGrid');
+  organs.forEach(organ=>{
+    const card=document.createElement('div');
+    card.className='organ-card';
+    card.innerHTML=`<div class="organ-icon">${organ.icon}</div><div class="organ-name">${organ.name}</div><div class="organ-risk">${organ.risk}</div><div class="organ-desc">${organ.desc}</div>`;
+    card.onclick=()=>openModal(organ);
+    grid.appendChild(card);
+  });
+})();
+
+// ── MODAL ───────────────────────────────────────────────────────────────────
+function openModal(organ){
+  document.getElementById('modalIcon').innerHTML=organ.icon;
+  document.getElementById('modalName').textContent=organ.name;
+  document.getElementById('modalTag').textContent=organ.risk;
+  document.getElementById('modalBody').textContent=organ.fullDesc;
+  document.getElementById('modalStat').textContent=organ.stat;
+  document.getElementById('organModal').classList.add('visible');
+}
+function closeModal(){
+  document.getElementById('organModal').classList.remove('visible');
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+// ── SCROLL WHEEL ────────────────────────────────────────────────────────────
+(function(){
+  const wheel=document.getElementById('scrollWheel');
+  if(!wheel) return;
+  let y=8, dir=1;
+  setInterval(()=>{
+    y+=dir*0.5;
+    if(y>16) dir=-1;
+    if(y<6)  dir=1;
+    wheel.setAttribute('cy',y);
+  },30);
+})();
+
+// ── START ───────────────────────────────────────────────────────────────────
+setTimeout(initSmoke,400);
+</script>
+</body>
+</html>
