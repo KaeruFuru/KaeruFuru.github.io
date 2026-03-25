@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Personal AI</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f7f5f0; --surface: #ffffff;
+  --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.15);
+  --text: #1a1814; --muted: #8a8680;
+  --accent: #c8a96e; --accent-light: #f5ede0;
+  --sans: 'DM Sans', sans-serif; --serif: 'DM Serif Display', serif;
+}
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+#wrapper { position: relative; display: flex; height: 100vh; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+#sidebar { width: 320px; min-width: 320px; background: var(--surface); border-right: 0.5px solid var(--border-strong); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar-top { padding: 24px 20px 16px; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+.sidebar-top h1 { font-family: var(--serif); font-size: 22px; font-weight: 400; line-height: 1.2; }
+.sidebar-top h1 em { font-style: italic; color: var(--accent); }
+.sidebar-top p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.tab-pills { display: flex; gap: 5px; padding: 10px 20px; border-bottom: 0.5px solid var(--border); flex-shrink: 0; overflow-x: auto; scrollbar-width: none; }
+.tab-pills::-webkit-scrollbar { display: none; }
+.pill { padding: 5px 11px; border-radius: 20px; font-size: 12px; border: 0.5px solid var(--border-strong); background: transparent; cursor: pointer; white-space: nowrap; color: var(--muted); transition: all 0.15s; font-family: var(--sans); }
+.pill.active { background: var(--text); color: #fff; border-color: var(--text); }
+.pill:hover:not(.active) { border-color: var(--text); color: var(--text); }
+
+.tab-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 18px; }
+.tab-panel.active { display: block; }
+
+.field { margin-bottom: 14px; }
+.field-label { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; }
+textarea, input[type=text], input[type=url] { width: 100%; font-family: var(--sans); font-size: 13px; border: 0.5px solid var(--border-strong); border-radius: 8px; padding: 8px 11px; background: var(--bg); color: var(--text); outline: none; resize: vertical; transition: border 0.15s, background 0.15s; line-height: 1.5; }
+textarea { min-height: 65px; }
+textarea:focus, input:focus { border-color: var(--accent); background: #fff; }
+input::placeholder, textarea::placeholder { color: #bbb; }
+
+.link-card { border: 0.5px solid var(--border-strong); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+.link-card-header { padding: 10px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 0.5px solid var(--border); }
+.picon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.link-card-header .info { flex: 1; }
+.link-card-header .info strong { font-size: 13px; font-weight: 500; display: block; }
+.link-card-header .info span { font-size: 11px; color: var(--muted); }
+.link-card-body { padding: 10px 12px; background: var(--bg); }
+.link-card-body input { background: #fff; margin-bottom: 6px; }
+.add-link-btn { font-size: 11px; color: var(--muted); background: none; border: 0.5px dashed var(--border-strong); border-radius: 6px; width: 100%; padding: 5px; cursor: pointer; font-family: var(--sans); transition: all 0.15s; margin-top: 6px; display: block; }
+.add-link-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.ls { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; flex-shrink: 0; }
+.ls-idle { background: #f0ede8; color: #aaa; }
+.ls-loading { background: #fff8e8; color: #b8860b; }
+.ls-ok { background: #e8f4e8; color: #2d7a2d; }
+.ls-err { background: #fde8e8; color: #b02020; }
+
+.build-btn { width: 100%; padding: 11px; background: var(--text); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--sans); transition: opacity 0.15s; margin-top: 8px; }
+.build-btn:hover { opacity: 0.85; }
+.build-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.status-bar { padding: 12px 18px; border-top: 0.5px solid var(--border); flex-shrink: 0; background: var(--surface); }
+.status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.status-row span { font-size: 12px; font-weight: 500; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+.badge-none { background: #f0ede8; color: #aaa; }
+.badge-ok { background: #e8f4e8; color: #2d7a2d; }
+.prompt-peek { font-size: 11px; color: var(--muted); line-height: 1.6; background: var(--bg); border-radius: 6px; padding: 8px 10px; max-height: 72px; overflow: hidden; border: 0.5px solid var(--border); cursor: pointer; }
+.reset-btn { font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 6px 0; font-family: var(--sans); width: 100%; text-align: center; margin-top: 4px; }
+.reset-btn:hover { color: var(--text); }
+
+/* ── CHAT ── */
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+#chat-header { padding: 16px 22px; border-bottom: 0.5px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+#chat-header h2 { font-family: var(--serif); font-size: 18px; font-weight: 400; }
+#chat-header .sub { font-size: 12px; color: var(--muted); }
+#messages { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 13px; }
+.empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); text-align: center; padding: 40px; }
+.empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.35; }
+.empty-state h3 { font-family: var(--serif); font-size: 20px; font-weight: 400; color: #ccc; margin-bottom: 6px; }
+.empty-state p { font-size: 13px; line-height: 1.7; max-width: 280px; }
+.msg { display: flex; flex-direction: column; max-width: 72%; gap: 4px; }
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.msg.ai { align-self: flex-start; align-items: flex-start; }
+.bubble { padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.6; }
+.msg.user .bubble { background: var(--text); color: #fff; border-bottom-right-radius: 4px; }
+.msg.ai .bubble { background: var(--surface); border: 0.5px solid var(--border-strong); border-bottom-left-radius: 4px; }
+.msg-time { font-size: 10px; color: #ccc; }
+.typing-bubble { display: flex; gap: 4px; align-items: center; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #ccc; animation: bop 1.2s infinite; }
+.dot:nth-child(2) { animation-delay: .2s; }
+.dot:nth-child(3) { animation-delay: .4s; }
+@keyframes bop { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+#input-row { padding: 13px 18px; background: var(--surface); border-top: 0.5px solid var(--border); display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0; }
+#user-input { flex: 1; font-family: var(--sans); font-size: 14px; border: 0.5px solid var(--border-strong); border-radius: 12px; padding: 10px 14px; resize: none; outline: none; max-height: 120px; line-height: 1.5; background: var(--bg); color: var(--text); transition: border 0.15s, background 0.15s; }
+#user-input:focus { border-color: var(--accent); background: #fff; }
+#user-input:disabled { opacity: 0.4; }
+#send-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--text); color: #fff; border: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity 0.15s; }
+#send-btn:hover { opacity: 0.8; }
+#send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.upload-zone { border: 0.5px dashed var(--border-strong); border-radius: 8px; padding: 18px; text-align: center; cursor: pointer; background: var(--bg); transition: all 0.15s; }
+.upload-zone:hover { border-color: var(--accent); background: var(--accent-light); }
+.upload-zone p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+#file-input { display: none; }
+.note { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+
+/* ── ONBOARDING MODAL ── */
+#ob-modal {
+  display: none;
+  position: absolute; inset: 0; z-index: 999;
+  background: rgba(26,24,20,0.52);
+  align-items: center;
+  justify-content: center;
+}
+#ob-modal.show { display: flex; }
+
+#ob-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border-strong);
+  border-radius: 18px;
+  padding: 30px 30px 24px;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+}
+.ob-animate {
+  animation: obSlide 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes obSlide {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ob-step-pill {
+  display: inline-block;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--accent);
+  background: var(--accent-light);
+  padding: 3px 9px; border-radius: 20px;
+  margin-bottom: 14px;
+}
+.ob-icon { font-size: 30px; margin-bottom: 10px; display: block; }
+.ob-title {
+  font-family: var(--serif); font-size: 21px; font-weight: 400;
+  line-height: 1.2; margin-bottom: 10px; color: var(--text);
+}
+.ob-body {
+  font-size: 13px; line-height: 1.72; color: var(--muted);
+  margin-bottom: 24px;
+}
+.ob-body strong { color: var(--text); font-weight: 500; }
+
+.ob-footer { display: flex; align-items: center; justify-content: space-between; }
+.ob-skip {
+  font-size: 12px; color: #c0bdb8; background: none; border: none;
+  cursor: pointer; font-family: var(--sans); padding: 6px 0;
+  transition: color 0.15s;
+}
+.ob-skip:hover { color: var(--muted); }
+.ob-right { display: flex; gap: 10px; align-items: center; }
+.ob-dots { display: flex; gap: 5px; align-items: center; }
+.ob-dot { width: 5px; height: 5px; border-radius: 50%; background: #e0ddd8; transition: background 0.2s, transform 0.2s; }
+.ob-dot.on { background: var(--accent); transform: scale(1.2); }
+.ob-continue {
+  padding: 9px 20px; background: var(--text); color: #fff;
+  border: none; border-radius: 9px; font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--sans); transition: opacity 0.15s;
+  letter-spacing: 0.01em;
+}
+.ob-continue:hover { opacity: 0.82; }
+</style>
+</head>
+<body>
+<div id="wrapper">
+
+  <div id="sidebar">
+    <div class="sidebar-top">
+      <h1>Your <em>Personal</em> AI</h1>
+      <p>The more it knows you, the better it gets</p>
+    </div>
+
+    <div class="tab-pills">
+      <button class="pill active" onclick="showTab(this,'links')">🔗 Links</button>
+      <button class="pill" onclick="showTab(this,'form')">✏️ Profile</button>
+      <button class="pill" onclick="showTab(this,'freeform')">💬 Freeform</button>
+      <button class="pill" onclick="showTab(this,'upload')">📄 Upload</button>
+    </div>
+
+    <!-- LINKS TAB -->
+    <div class="tab-panel active" id="tab-links">
+      <p class="note">Paste links to your actual profiles and playlists. The AI reads them and picks up your real taste — no typing needed.</p>
+
+      <div class="link-card">
+        <div class="link-card-header">
+          <div class="picon" style="background:#e8f8ef;">🎵</div>
+          <div class="info"><strong>Spotify</strong><span>Playlists, profile</span></div>
+          <span class="ls ls-idle" id="st-spotify">—</span>
+        </div>
+        <div class="link-card-body" id="in-spotify">
+          <input type="url" placeholder="https://open.spotify.com/playlist/…" oninput="markDirty('spotify')">
+          <button class="add-link-btn" onclick="addInput('spotify')">+ Add another link</button>
+        </div>
+      </div>
+
+      <div class="link-card">
+        <div class="link-card-header">
+          <div class="picon" style="background:#fce8e8;">🎶</div>
+          <div class="info"><strong>Apple Music</strong><span>Playlists, albums</span></div>
+          <span class="ls ls-idle" id="st-apple">—</span>
+        </div>
+        <div class="link-card-body" id="in-apple">
+          <input type="url" placeholder="https://music.apple.com/…/playlist/…" oninput="markDirty('apple')">
+          <button class="add-link-btn" onclick="addInput('apple')">+ Add another link</button>
+        </div>
+      </div>
+
+      <div class="link-card">
+        <div class="link-card-header">
+          <div class="picon" style="background:#fff0e8;">▶️</div>
+          <div class="info"><strong>YouTube</strong><span>Channel, playlists</span></div>
+          <span class="ls ls-idle" id="st-youtube">—</span>
+        </div>
+        <div class="link-card-body" id="in-youtube">
+          <input type="url" placeholder="https://youtube.com/@yourchannel" oninput="markDirty('youtube')">
+          <button class="add-link-btn" onclick="addInput('youtube')">+ Add another link</button>
+        </div>
+      </div>
+
+      <div class="link-card">
+        <div class="link-card-header">
+          <div class="picon" style="background:#fce8e8;">📌</div>
+          <div class="info"><strong>Pinterest</strong><span>Boards, profiles</span></div>
+          <span class="ls ls-idle" id="st-pinterest">—</span>
+        </div>
+        <div class="link-card-body" id="in-pinterest">
+          <input type="url" placeholder="https://pinterest.com/yourname/boardname/" oninput="markDirty('pinterest')">
+          <button class="add-link-btn" onclick="addInput('pinterest')">+ Add another link</button>
+        </div>
+      </div>
+
+      <div class="link-card">
+        <div class="link-card-header">
+          <div class="picon" style="background:#ece8f8;">✦</div>
+          <div class="info"><strong>Cosmos</strong><span>Boards, collections</span></div>
+          <span class="ls ls-idle" id="st-cosmos">—</span>
+        </div>
+        <div class="link-card-body" id="in-cosmos">
+          <input type="url" placeholder="https://www.cosmos.so/yourname" oninput="markDirty('cosmos')">
+          <button class="add-link-btn" onclick="addInput('cosmos')">+ Add another link</button>
+        </div>
+      </div>
+
+      <button class="build-btn" id="build-links-btn" onclick="buildFromLinks()">Read my profiles & build AI →</button>
+    </div>
+
+    <!-- FORM TAB -->
+    <div class="tab-panel" id="tab-form">
+      <div class="field"><div class="field-label">🎵 Music taste</div><textarea id="f-music" placeholder="Artists, genres, what you play while working / chilling / working out…"></textarea></div>
+      <div class="field"><div class="field-label">🎬 Movies & TV</div><textarea id="f-movies" placeholder="Favorites, genres, directors, shows right now…"></textarea></div>
+      <div class="field"><div class="field-label">🍜 Food & drink</div><textarea id="f-food" placeholder="Cuisines, go-to meals, dietary choices, fave spots…"></textarea></div>
+      <div class="field"><div class="field-label">🎨 Aesthetic & style</div><textarea id="f-aesthetic" placeholder="Visual style, fashion, interior taste, color palettes…"></textarea></div>
+      <div class="field"><div class="field-label">🎮 Hobbies & interests</div><textarea id="f-hobbies" placeholder="What you do for fun, side projects, sports…"></textarea></div>
+      <div class="field"><div class="field-label">💭 Goals & values</div><textarea id="f-goals" placeholder="What matters to you, ambitions, worldview…"></textarea></div>
+      <div class="field"><div class="field-label">👥 People in my life</div><textarea id="f-people" placeholder="Partner, friends, family — names & your relationship…"></textarea></div>
+      <div class="field"><div class="field-label">☀️ Daily life & routines</div><textarea id="f-lifestyle" placeholder="City, work situation, daily vibe…"></textarea></div>
+      <button class="build-btn" onclick="buildFromForm()">Build my personal AI →</button>
+    </div>
+
+    <!-- FREEFORM TAB -->
+    <div class="tab-panel" id="tab-freeform">
+      <p class="note">Just write freely — no structure needed. Stream of consciousness, bullet points, whatever feels natural.</p>
+      <textarea id="freeform-text" style="min-height:280px;" placeholder="I'm 26, live in Tokyo, obsessed with city pop and early jazz. I work in product design. My girlfriend Hana is into hiking. I'm trying to cook more Korean food…"></textarea>
+      <button class="build-btn" style="margin-top:8px;" onclick="buildFromFreeform()">Build my personal AI →</button>
+    </div>
+
+    <!-- UPLOAD TAB -->
+    <div class="tab-panel" id="tab-upload">
+      <p class="note">Upload a journal entry, notes file, or anything you've written about yourself.</p>
+      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+        <div style="font-size:24px;">📄</div>
+        <strong style="font-size:13px;display:block;margin-top:6px;">Click to upload</strong>
+        <p>TXT or PDF supported</p>
+      </div>
+      <input type="file" id="file-input" accept=".txt,.pdf" onchange="handleUpload(event)">
+      <div id="upload-status" style="margin-top:8px;font-size:12px;color:var(--muted);"></div>
+      <div id="extra-wrap" style="display:none;margin-top:12px;">
+        <div class="field-label" style="margin-bottom:5px;">Anything to add?</div>
+        <textarea id="extra-context" placeholder="Anything the file doesn't cover…"></textarea>
+      </div>
+      <button class="build-btn" id="upload-btn" style="margin-top:8px;" disabled onclick="buildFromUpload()">Upload a file first →</button>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-row">
+        <span>Profile</span>
+        <span class="badge badge-none" id="profile-badge">Not set</span>
+      </div>
+      <div class="prompt-peek" id="prompt-peek" onclick="togglePrompt()">
+        <em style="color:#bbb;">Set up your profile above to activate your AI.</em>
+      </div>
+      <button class="reset-btn" onclick="resetAll()">Reset everything</button>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="main">
+    <div id="chat-header">
+      <h2>Your Personal AI</h2>
+      <span class="sub" id="chat-sub">Set up your profile to begin</span>
+    </div>
+    <div id="messages">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">✦</div>
+        <h3>Nothing here yet</h3>
+        <p>Paste your Spotify, Pinterest, or Cosmos links — or fill out the profile form. Then start talking.</p>
+      </div>
+    </div>
+    <div id="input-row">
+      <textarea id="user-input" rows="1" placeholder="Message your AI…" disabled
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button id="send-btn" onclick="sendMessage()" disabled>↑</button>
+    </div>
+  </div>
+
+  <!-- ONBOARDING MODAL — sits inside #wrapper so position:absolute works -->
+  <div id="ob-modal">
+    <div id="ob-card">
+      <span class="ob-step-pill" id="ob-pill">Step 1 of 5</span>
+      <span class="ob-icon" id="ob-icon">👋</span>
+      <div class="ob-title" id="ob-title">Welcome</div>
+      <div class="ob-body" id="ob-body"></div>
+      <div class="ob-footer">
+        <button class="ob-skip" onclick="endTour()">Skip tour</button>
+        <div class="ob-right">
+          <div class="ob-dots" id="ob-dots"></div>
+          <button class="ob-continue" id="ob-continue" onclick="nextStep()">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- #wrapper -->
+
+<script>
+let systemPrompt = '', history = [], uploadedContent = '', isBusy = false, promptExpanded = false;
+
+/* ── TABS ── */
+function showTab(pill, id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  pill.classList.add('active');
+}
+
+/* ── LINKS ── */
+function addInput(platform) {
+  const wrap = document.getElementById('in-' + platform);
+  const inp = document.createElement('input');
+  inp.type = 'url'; inp.placeholder = 'Paste another link…';
+  inp.oninput = () => markDirty(platform);
+  wrap.insertBefore(inp, wrap.querySelector('.add-link-btn'));
+}
+function markDirty(p) { setSt(p, 'idle', '—'); }
+function setSt(p, state, text) {
+  const el = document.getElementById('st-' + p);
+  el.className = 'ls ls-' + state; el.textContent = text;
+}
+function getLinks(p) {
+  return [...document.getElementById('in-' + p).querySelectorAll('input[type=url]')]
+    .map(i => i.value.trim()).filter(v => v.startsWith('http'));
+}
+
+const platformLabels = {
+  spotify: 'Spotify playlist/profile', apple: 'Apple Music playlist',
+  youtube: 'YouTube channel/playlist', pinterest: 'Pinterest board/profile',
+  cosmos: 'Cosmos board/collection'
+};
+
+async function fetchAndSummarize(url, label) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: `Search for and visit this ${label} URL: ${url}\n\nExtract what it reveals about the person's taste. For music: artists, genres, moods. For visual boards: aesthetic themes, color palette, visual style. For YouTube: topics, creators, vibes. Be specific, name actual artists/themes. Max 150 words.` }]
+    })
+  });
+  const data = await res.json();
+  return data.content.filter(c => c.type === 'text').map(c => c.text).join('\n').trim();
+}
+
+async function buildFromLinks() {
+  const platforms = ['spotify','apple','youtube','pinterest','cosmos'];
+  const toFetch = {};
+  platforms.forEach(p => { const l = getLinks(p); if (l.length) toFetch[p] = l; });
+  if (!Object.keys(toFetch).length) { alert('Paste at least one link first!'); return; }
+  const btn = document.getElementById('build-links-btn');
+  btn.disabled = true; btn.textContent = 'Reading your profiles…';
+  const summaries = [];
+  for (const [p, links] of Object.entries(toFetch)) {
+    setSt(p, 'loading', 'Reading…');
+    let anyOk = false;
+    for (const url of links) {
+      try {
+        const content = await fetchAndSummarize(url, platformLabels[p]);
+        if (content) { summaries.push(`[${platformLabels[p]}]\n${content}`); anyOk = true; }
+      } catch(e) {}
+    }
+    setSt(p, anyOk ? 'ok' : 'err', anyOk ? '✓ Done' : 'Failed');
+  }
+  if (!summaries.length) {
+    alert('Could not read those links. Try the Profile or Freeform tab instead.');
+    btn.disabled = false; btn.textContent = 'Read my profiles & build AI →'; return;
+  }
+  btn.textContent = 'Building your AI…';
+  await generateSystemPrompt(summaries.join('\n\n'));
+  btn.disabled = false; btn.textContent = 'Read my profiles & build AI →';
+}
+
+async function buildFromForm() {
+  const rows = [['Music taste','f-music'],['Movies & TV','f-movies'],['Food & drink','f-food'],['Aesthetic & style','f-aesthetic'],['Hobbies','f-hobbies'],['Goals & values','f-goals'],['People in life','f-people'],['Daily life','f-lifestyle']];
+  const parts = rows.map(([l,id]) => { const v = document.getElementById(id).value.trim(); return v ? `${l}: ${v}` : null; }).filter(Boolean);
+  if (!parts.length) { alert('Fill in at least one field!'); return; }
+  await generateSystemPrompt(parts.join('\n\n'));
+}
+
+async function buildFromFreeform() {
+  const text = document.getElementById('freeform-text').value.trim();
+  if (!text) { alert('Write something about yourself first!'); return; }
+  await generateSystemPrompt(text);
+}
+
+async function handleUpload(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const status = document.getElementById('upload-status');
+  const btn = document.getElementById('upload-btn');
+  status.textContent = 'Reading…';
+  if (file.type === 'text/plain') {
+    uploadedContent = await file.text();
+    status.textContent = `✓ ${file.name} loaded`;
+  } else if (file.type === 'application/pdf') {
+    const b64 = await new Promise((res,rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); });
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:'Extract all personal info, tastes, interests, personality details. Be thorough.'}]}]})});
+      const d = await resp.json(); uploadedContent = d.content[0].text;
+      status.textContent = '✓ PDF processed';
+    } catch(e) { status.textContent = 'Error reading PDF. Try .txt instead.'; return; }
+  }
+  document.getElementById('extra-wrap').style.display = 'block';
+  btn.disabled = false; btn.textContent = 'Build my personal AI →';
+}
+
+async function buildFromUpload() {
+  if (!uploadedContent) { alert('Upload a file first!'); return; }
+  const extra = document.getElementById('extra-context').value.trim();
+  await generateSystemPrompt(uploadedContent + (extra ? '\n\nExtra notes: ' + extra : ''));
+}
+
+async function generateSystemPrompt(rawInfo) {
+  const badge = document.getElementById('profile-badge');
+  badge.textContent = 'Building…'; badge.className = 'badge'; badge.style.cssText = 'background:#fff8e8;color:#b8860b;';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:`You are crafting a system prompt for a deeply personal AI assistant. Based on the raw info below, write a rich, warm, conversational system prompt that makes the AI feel like it's been this person's close friend for years.\n\nRules:\n- Write in 2nd person addressing the AI ("You are talking with someone who…")\n- Be specific — reference actual artists, aesthetics, shows, names from the data\n- Capture vibe and personality, not just facts\n- Include how to talk to them (tone, energy, style)\n- 250-400 words of flowing prose (not a bullet list)\n\nRAW INFO:\n${rawInfo}\n\nOutput ONLY the system prompt. No preamble.`}]})});
+    const data = await res.json();
+    activateProfile(data.content[0].text.trim());
+  } catch(e) {
+    alert('Something went wrong. Please try again.');
+    badge.textContent = 'Error'; badge.style.cssText = 'background:#fde8e8;color:#b02020;';
+  }
+}
+
+function activateProfile(prompt) {
+  systemPrompt = prompt; history = [];
+  const badge = document.getElementById('profile-badge');
+  badge.textContent = 'Active'; badge.className = 'badge badge-ok'; badge.style.cssText = '';
+  document.getElementById('prompt-peek').innerHTML = '<span style="color:var(--muted)">' + prompt.slice(0,200) + '…</span>';
+  document.getElementById('user-input').disabled = false;
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('chat-sub').textContent = 'Profile active — start talking';
+  const empty = document.getElementById('empty-state');
+  if (empty) empty.innerHTML = '<div class="empty-icon">✦</div><h3>You\'re all set</h3><p>Your AI knows you now. Ask it anything.</p>';
+}
+
+function togglePrompt() {
+  if (!systemPrompt) return;
+  promptExpanded = !promptExpanded;
+  const el = document.getElementById('prompt-peek');
+  el.style.maxHeight = promptExpanded ? '200px' : '72px';
+  el.innerHTML = '<span style="color:var(--muted)">' + (promptExpanded ? systemPrompt : systemPrompt.slice(0,200) + '…') + '</span>';
+}
+
+function resetAll() {
+  if (!confirm('Reset profile and clear chat?')) return;
+  systemPrompt = ''; history = []; uploadedContent = '';
+  document.getElementById('profile-badge').textContent = 'Not set';
+  document.getElementById('profile-badge').className = 'badge badge-none';
+  document.getElementById('profile-badge').style.cssText = '';
+  document.getElementById('prompt-peek').innerHTML = '<em style="color:#bbb;">Set up your profile above to activate your AI.</em>';
+  document.getElementById('user-input').disabled = true;
+  document.getElementById('send-btn').disabled = true;
+  document.getElementById('chat-sub').textContent = 'Set up your profile to begin';
+  document.getElementById('messages').innerHTML = '<div class="empty-state" id="empty-state"><div class="empty-icon">✦</div><h3>Nothing here yet</h3><p>Set up your profile on the left to get started.</p></div>';
+  ['spotify','apple','youtube','pinterest','cosmos'].forEach(p => setSt(p,'idle','—'));
+}
+
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+
+async function sendMessage() {
+  if (!systemPrompt || isBusy) return;
+  const input = document.getElementById('user-input');
+  const text = input.value.trim(); if (!text) return;
+  isBusy = true; input.value = ''; input.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+  const empty = document.getElementById('empty-state'); if (empty) empty.remove();
+  addBubble('user', text); history.push({ role: 'user', content: text });
+  const tid = 't' + Date.now();
+  const tel = document.createElement('div'); tel.className = 'msg ai'; tel.id = tid;
+  tel.innerHTML = '<div class="bubble"><div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+  document.getElementById('messages').appendChild(tel); scrollDown();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system: systemPrompt + '\n\nBe warm, direct, personal. Talk like a knowledgeable close friend — no AI disclaimers, no formal tone.', messages: history })});
+    const data = await res.json(); const reply = data.content[0].text;
+    document.getElementById(tid)?.remove(); addBubble('ai', reply);
+    history.push({ role: 'assistant', content: reply });
+  } catch(e) { document.getElementById(tid)?.remove(); addBubble('ai', 'Something went wrong — try again in a sec.'); }
+  finally { isBusy = false; document.getElementById('send-btn').disabled = false; input.focus(); }
+}
+
+function addBubble(role, text) {
+  const msgs = document.getElementById('messages');
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const el = document.createElement('div'); el.className = 'msg ' + role;
+  el.innerHTML = `<div class="bubble">${text.replace(/\n/g,'<br>')}</div><span class="msg-time">${time}</span>`;
+  msgs.appendChild(el); scrollDown();
+}
+function scrollDown() { const m = document.getElementById('messages'); m.scrollTop = m.scrollHeight; }
+
+/* ══════════════════════════════
+   ONBOARDING TOUR
+══════════════════════════════ */
+const STEPS = [
+  {
+    icon: '👋',
+    title: 'Welcome to Your Personal AI',
+    body: 'This is a private AI built to <strong>actually know you</strong> — your music taste, aesthetic, the people in your life, your goals. The more you share, the smarter and more personal it becomes.',
+    tab: null
+  },
+  {
+    icon: '🔗',
+    title: 'Paste links to your real profiles',
+    body: 'The fastest way to teach it about you is the <strong>Links tab</strong>. Paste your Spotify playlists, Pinterest boards, YouTube channel, or Cosmos collections — it reads them and picks up your actual taste automatically.',
+    tab: 'links'
+  },
+  {
+    icon: '✏️',
+    title: 'Or fill out your profile manually',
+    body: 'Prefer to type it out? Switch to the <strong>Profile tab</strong>. Fill in any categories you want — music, food, aesthetics, the people in your life, your goals. Every field makes it sharper.',
+    tab: 'form'
+  },
+  {
+    icon: '💬',
+    title: 'Or just write freely',
+    body: 'Not a form person? Try <strong>Freeform</strong> — write about yourself like you\'re texting a friend. Stream of consciousness is totally fine. It\'ll figure out the rest.',
+    tab: 'freeform'
+  },
+  {
+    icon: '✦',
+    title: 'Then just start talking',
+    body: 'Once your profile is built, the chat unlocks. Ask for <strong>music recs, outfit ideas, restaurant picks, honest advice</strong> — anything. It responds like someone who genuinely knows your taste.',
+    tab: null
+  }
+];
+
+let tourStep = 0;
+
+function startTour() {
+  tourStep = 0;
+  document.getElementById('ob-modal').classList.add('show');
+  renderTourStep(0);
+}
+
+function nextStep() {
+  tourStep++;
+  if (tourStep >= STEPS.length) { endTour(); return; }
+  renderTourStep(tourStep);
+}
+
+function endTour() {
+  document.getElementById('ob-modal').classList.remove('show');
+  // restore links tab
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-links').classList.add('active');
+  document.querySelector('.pill').classList.add('active');
+}
+
+function renderTourStep(index) {
+  const step = STEPS[index];
+  const isLast = index === STEPS.length - 1;
+
+  // Switch sidebar tab to match step
+  if (step.tab) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + step.tab).classList.add('active');
+    const tabOrder = ['links','form','freeform','upload'];
+    const pillIndex = tabOrder.indexOf(step.tab);
+    const pills = document.querySelectorAll('.pill');
+    if (pillIndex >= 0 && pills[pillIndex]) pills[pillIndex].classList.add('active');
+  }
+
+  document.getElementById('ob-pill').textContent = `Step ${index + 1} of ${STEPS.length}`;
+  document.getElementById('ob-icon').textContent = step.icon;
+  document.getElementById('ob-title').textContent = step.title;
+  document.getElementById('ob-body').innerHTML = step.body;
+  document.getElementById('ob-continue').textContent = isLast ? 'Get started ✦' : 'Continue';
+
+  // Dots
+  document.getElementById('ob-dots').innerHTML = STEPS.map((_,i) =>
+    `<div class="ob-dot${i===index?' on':''}"></div>`
+  ).join('');
+
+  // Re-trigger animation
+  const card = document.getElementById('ob-card');
+  card.classList.remove('ob-animate');
+  void card.offsetWidth; // reflow
+  card.classList.add('ob-animate');
+}
+
+// Auto-start on load
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(startTour, 300);
+});
+</script>
+</body>
+</html>
