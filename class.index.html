@@ -211,6 +211,15 @@
     margin-top: 5px; text-align: center;
     color: var(--text); max-width: 110px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    cursor: default;
+  }
+  .circle-name:hover { text-decoration: underline dotted; cursor: text; }
+  .circle-name-input {
+    font: 800 0.72rem 'Nunito', sans-serif;
+    text-align: center; width: 90px; max-width: 110px;
+    background: var(--card-bg); color: var(--text);
+    border: 1.5px solid #6366f1; border-radius: 7px;
+    outline: none; padding: 1px 4px; margin-top: 5px;
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -845,6 +854,16 @@
     100% { opacity: 0; transform: translateY(200px) rotate(720deg); }
   }
 
+  /* ── UNDO TOAST ── */
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(16px) scale(0.92); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1); }
+  }
+  @keyframes toastOut {
+    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+    to   { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  }
+
   /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -1192,7 +1211,7 @@ const AWARDS = [
   { label:'Focused 🚀', delta:3, type:'pos' },
   { label:'Teamwork 🤝', delta:5, type:'pos' },
   { label:'+1 Point', delta:1, type:'pos' },
-  { label:'+2 Points', delta:2, type:'pos' },
+  { label:'+7 Points', delta:7, type:'pos' },
   { label:'Off-task 😕', delta:-3, type:'neg' },
   { label:'Disruption 🔇', delta:-2, type:'neg' },
 ];
@@ -1204,7 +1223,7 @@ let activeStudentId = null;
 let longPressTimer = null;
 
 function loadState() {
-  const saved = localStorage.getItem('circlepoints_v3');
+  const saved = localStorage.getItem('circlepoints_v4');
   if (saved) {
     state = JSON.parse(saved);
   } else {
@@ -1221,7 +1240,7 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem('circlepoints_v3', JSON.stringify(state));
+    localStorage.setItem('circlepoints_v4', JSON.stringify(state));
     checkStorageUsage();
   } catch(e) {
     // QuotaExceededError — base64 images have filled localStorage
@@ -1257,20 +1276,12 @@ function showStorageWarning(msg) {
 }
 
 function generateDefaultStudents(classIdx) {
-  const names = [
-    ['Alex','Blake','Casey','Dana','Eli','Finn','Grace','Harper','Iris','Jay','Kim','Leo','Maya','Noah'],
-    ['Olivia','Parker','Quinn','Riley','Sam','Tyler','Uma','Violet','Will','Xena','Yara','Zoe'],
-    ['Aiden','Brynn','Cole','Dylan','Eden','Faye','Gabe','Hana','Ivan','Jade'],
-    ['Kai','Lena','Milo','Nora','Owen','Piper','Reed','Sage','Theo','Vera','West'],
-    ['Aria','Beau','Cleo','Drew','Emile','Flora','Gus','Hale','Ivy','Jules'],
-  ];
-  const pool = names[classIdx % names.length];
-  return pool.map((name, i) => ({
+  // 35 students per class, default names are just their seat number: "1", "2", … "35"
+  return Array.from({ length: 35 }, (_, i) => ({
     id: `s_${classIdx}_${i}`,
-    name,
-    // avatar: null means "use initials fallback"
-    avatar: null,   // string: base64 data URL or https:// URL, or null
-    bg: PALETTE[(classIdx * 3 + i) % PALETTE.length],
+    name: String(i + 1),
+    avatar: null,
+    bg: PALETTE[i % PALETTE.length],
     points: 0,
     history: [],
   }));
@@ -1416,7 +1427,9 @@ function renderCircles() {
             color:#1e1b4b;line-height:1.4;">${s.points}</div>
         </div>
       ${wrapperClose}
-      <div class="circle-name">${s.name}</div>
+      <div class="circle-name"
+           ondblclick="startRenameStudent(event,'${s.id}')"
+           title="Double-click to rename">${s.name}</div>
     </div>`;
   }).join('');
 }
@@ -1478,8 +1491,45 @@ function finishRenameClass(id, val) {
 function handleCircleClick(e, sid) {
   e.stopPropagation();
   lastClickedId = sid;
-  // Single click = instant +1 point
+  // Single click = instant +5 points
   awardPoints(sid, 5, 'Click +5');
+}
+
+// ── INLINE CIRCLE RENAME ──
+function startRenameStudent(e, sid) {
+  e.stopPropagation();
+  const nameEl = e.currentTarget;
+  const cls = getActiveClass();
+  const s = cls?.students.find(x => x.id === sid);
+  if (!s) return;
+
+  const input = document.createElement('input');
+  input.className = 'circle-name-input';
+  input.value = s.name;
+  input.maxLength = 20;
+  nameEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  const commit = () => {
+    const val = input.value.trim();
+    if (val) s.name = val;
+    saveState();
+    const newEl = document.createElement('div');
+    newEl.className = 'circle-name';
+    newEl.title = 'Double-click to rename';
+    newEl.textContent = s.name;
+    newEl.ondblclick = (ev) => startRenameStudent(ev, sid);
+    input.replaceWith(newEl);
+    renderLeaderboard();
+  };
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter')  input.blur();
+    if (ev.key === 'Escape') { input.value = s.name; input.blur(); }
+    ev.stopPropagation();
+  });
 }
 
 function onRightClick(e, sid) {
@@ -1570,8 +1620,19 @@ function awardPoints(sid, delta, reason) {
   animateCircle(sid, delta);
   if (Math.abs(delta) >= 5) spawnConfetti(sid);
 
-  // ── CHECK 67-POINT MILESTONE ──
+  // ── CHECK 67-POINT MILESTONES ──
   checkClassTotal67(cls);
+  checkStudent67(s, cls.id);
+}
+
+// Fires the full-screen 67 celebration when an individual student reaches exactly 67 pts
+// Uses a per-student flag so it only fires once per student
+function checkStudent67(student, classId) {
+  if (student.points !== 67) return;
+  const flagKey = 'celebrated67-student-' + student.id;
+  if (localStorage.getItem(flagKey)) return;
+  localStorage.setItem(flagKey, '1');
+  triggerCelebration67();
 }
 
 // Fires the full-screen 67 celebration exactly once per class
@@ -2115,11 +2176,82 @@ function removeStudentConfirm(sid) {
   document.getElementById('modal-container').innerHTML = html;
 }
 
+// ── DELETION UNDO STACK ──
+// Maps classId → array of recently deleted student objects (up to 10)
+const deletionStack = {};
+
 function doRemoveStudent(sid) {
   const cls = getActiveClass();
-  cls.students = cls.students.filter(s => s.id !== sid);
+  const s = cls.students.find(x => x.id === sid);
+  if (!s) return;
+
+  // Record the deleted student AND its original position for accurate restore
+  const idx = cls.students.indexOf(s);
+  if (!deletionStack[cls.id]) deletionStack[cls.id] = [];
+  deletionStack[cls.id].push({ student: JSON.parse(JSON.stringify(s)), idx });
+  // Keep stack bounded
+  if (deletionStack[cls.id].length > 10) deletionStack[cls.id].shift();
+
+  cls.students = cls.students.filter(x => x.id !== sid);
   closeModal();
   render();
+  showUndoToast(s.name, cls.id);
+}
+
+function undoDelete(classId) {
+  const stack = deletionStack[classId];
+  if (!stack || stack.length === 0) return;
+  const { student, idx } = stack.pop();
+  const cls = state.classes.find(c => c.id === classId);
+  if (!cls) return;
+  // Re-insert at original position (clamped to current length)
+  const insertAt = Math.min(idx, cls.students.length);
+  cls.students.splice(insertAt, 0, student);
+  saveState();
+  render();
+  // Remove toast
+  document.getElementById('undo-toast')?.remove();
+}
+
+function showUndoToast(name, classId) {
+  // Remove any existing toast first
+  document.getElementById('undo-toast')?.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'undo-toast';
+  toast.innerHTML = `
+    <span style="flex:1;">🗑️ <strong>${name}</strong> removed</span>
+    <button onclick="undoDelete('${classId}')"
+      style="background:#6366f1;color:#fff;border:none;border-radius:9px;
+             padding:5px 14px;font:800 0.82rem 'Nunito',sans-serif;
+             cursor:pointer;white-space:nowrap;flex-shrink:0;
+             transition:background 0.15s;"
+      onmouseover="this.style.background='#4f46e5'"
+      onmouseout="this.style.background='#6366f1'">
+      ↩ Undo
+    </button>`;
+  toast.style.cssText = `
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--card-bg); color:var(--text);
+    border:1.5px solid var(--border);
+    border-radius:14px; padding:10px 14px;
+    font:700 0.85rem 'Nunito',sans-serif;
+    box-shadow:0 8px 32px rgba(0,0,0,0.18);
+    display:flex; align-items:center; gap:12px;
+    min-width:240px; max-width:340px;
+    z-index:8000;
+    animation:toastIn 0.3s cubic-bezier(.34,1.56,.64,1);
+  `;
+  document.body.appendChild(toast);
+
+  // Auto-dismiss after 5 s
+  const timer = setTimeout(() => {
+    toast.style.animation = 'toastOut 0.3s ease forwards';
+    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+  }, 5000);
+
+  // If user clicks Undo the timer is irrelevant — toast removes itself
+  toast.querySelector('button').addEventListener('click', () => clearTimeout(timer));
 }
 
 // ── RESET ──
